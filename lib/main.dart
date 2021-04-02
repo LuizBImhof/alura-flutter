@@ -14,6 +14,9 @@ class BiteBankApp extends StatelessWidget {
 }
 
 class FormularioTransferencia extends StatelessWidget {
+  final TextEditingController _controllerCampoNrConta = TextEditingController();
+  final TextEditingController _controllerCampoValor = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +28,7 @@ class FormularioTransferencia extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8),
             child: TextField(
+              controller: _controllerCampoNrConta,
               style: TextStyle(
                 fontSize: 24.0,
               ),
@@ -38,6 +42,7 @@ class FormularioTransferencia extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8),
             child: TextField(
+              controller: _controllerCampoValor,
               style: TextStyle(
                 fontSize: 24.0,
               ),
@@ -49,9 +54,21 @@ class FormularioTransferencia extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {  },
+            onPressed: () {
+              final int nrConta = int.tryParse(_controllerCampoNrConta.text);
+              final double valor = double.tryParse(_controllerCampoValor.text);
+              Transferencia transferencia;
+              if (nrConta != null && valor != null) {
+                transferencia = Transferencia(valor, nrConta);
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(transferencia.toString()),
+                  
+                ),
+              );
+            },
             child: Text('Confirmar'),
-
           )
         ],
       ),
@@ -102,4 +119,12 @@ class Transferencia {
   final int numeroConta;
 
   Transferencia(this.valor, this.numeroConta);
+
+  @override
+  String toString() {
+    return 'Transferência de: ' +
+        valor.toString() +
+        ' Para a Conta: ' +
+        numeroConta.toString();
+  }
 }
