@@ -7,13 +7,21 @@ class BiteBankApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: FormularioTransferencia(),
+        body: ListaTransferencias(),
       ),
     );
   }
 }
 
-class FormularioTransferencia extends StatelessWidget {
+class FormularioTransferencia extends StatefulWidget {
+  
+  @override
+  State<StatefulWidget> createState() {
+    return FormularioTransferenciaState();
+  }
+}
+
+class FormularioTransferenciaState extends State<FormularioTransferencia>{
   final TextEditingController _controllerCampoNrConta = TextEditingController();
   final TextEditingController _controllerCampoValor = TextEditingController();
 
@@ -23,24 +31,26 @@ class FormularioTransferencia extends StatelessWidget {
       appBar: AppBar(
         title: Text('Criando Transferência'),
       ),
-      body: Column(
-        children: [
-          Editor(
-            controller: _controllerCampoNrConta,
-            label: 'Número da conta',
-            hint: '0000',
-          ),
-          Editor(
-            controller: _controllerCampoValor,
-            label: 'Valor da transferencia',
-            hint: '0.00',
-            icon: Icons.monetization_on,
-          ),
-          ElevatedButton(
-            onPressed: () => _criaTransferencia(context),
-            child: Text('Confirmar'),
-          )
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Editor(
+              controller: _controllerCampoNrConta,
+              label: 'Número da conta',
+              hint: '0000',
+            ),
+            Editor(
+              controller: _controllerCampoValor,
+              label: 'Valor da transferencia',
+              hint: '0.00',
+              icon: Icons.monetization_on,
+            ),
+            ElevatedButton(
+              onPressed: () => _criaTransferencia(context),
+              child: Text('Confirmar'),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -51,13 +61,10 @@ class FormularioTransferencia extends StatelessWidget {
     Transferencia transferencia;
     if (nrConta != null && valor != null) {
       transferencia = Transferencia(valor, nrConta);
+      Navigator.pop(context, transferencia);
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(transferencia.toString()),
-      ),
-    );
   }
+
 }
 
 class Editor extends StatelessWidget {
@@ -88,21 +95,43 @@ class Editor extends StatelessWidget {
   }
 }
 
-class ListaTransferencias extends StatelessWidget {
+class ListaTransferencias extends StatefulWidget {
+  final List<Transferencia> _transferecias = [];
+
+
+  @override
+  State<StatefulWidget> createState() {
+    return ListaTransferenciasState();
+  }
+}
+
+class ListaTransferenciasState extends State<ListaTransferencias>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Transferências'),
       ),
-      body: Column(
-        children: [
-          ItemTransferencia(Transferencia(100.00, 1000)),
-          ItemTransferencia(Transferencia(200.00, 1000)),
-          ItemTransferencia(Transferencia(300.00, 1000)),
-        ],
+      body: ListView.builder(
+        itemCount: widget._transferecias.length,
+        itemBuilder: (context, indice){
+          final transferencia = widget._transferecias[indice];
+          return ItemTransferencia(transferencia);
+        },
       ),
       floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          final Future<Transferencia> future =
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return FormularioTransferencia();
+          }));
+          future.then((transferenciaRecebida) {
+            if (transferenciaRecebida != null) {
+              debugPrint('$transferenciaRecebida');
+              setState(() => widget._transferecias.add(transferenciaRecebida));
+            }
+          });
+        },
         child: const Icon(Icons.add),
       ),
     );
