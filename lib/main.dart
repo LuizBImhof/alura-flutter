@@ -6,22 +6,27 @@ class BiteBankApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: ListaTransferencias(),
-      ),
+        theme: ThemeData(
+          primaryColor: Colors.green[900],
+          accentColor: Colors.blueAccent[700],
+          buttonTheme: ButtonThemeData(
+            buttonColor: Colors.blueAccent[700],
+            textTheme: ButtonTextTheme.primary,
+          )
+        ),
+      home: ListaTransferencias(),
     );
   }
 }
 
 class FormularioTransferencia extends StatefulWidget {
-  
   @override
   State<StatefulWidget> createState() {
     return FormularioTransferenciaState();
   }
 }
 
-class FormularioTransferenciaState extends State<FormularioTransferencia>{
+class FormularioTransferenciaState extends State<FormularioTransferencia> {
   final TextEditingController _controllerCampoNrConta = TextEditingController();
   final TextEditingController _controllerCampoValor = TextEditingController();
 
@@ -64,7 +69,6 @@ class FormularioTransferenciaState extends State<FormularioTransferencia>{
       Navigator.pop(context, transferencia);
     }
   }
-
 }
 
 class Editor extends StatelessWidget {
@@ -98,14 +102,13 @@ class Editor extends StatelessWidget {
 class ListaTransferencias extends StatefulWidget {
   final List<Transferencia> _transferecias = [];
 
-
   @override
   State<StatefulWidget> createState() {
     return ListaTransferenciasState();
   }
 }
 
-class ListaTransferenciasState extends State<ListaTransferencias>{
+class ListaTransferenciasState extends State<ListaTransferencias> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,7 +117,7 @@ class ListaTransferenciasState extends State<ListaTransferencias>{
       ),
       body: ListView.builder(
         itemCount: widget._transferecias.length,
-        itemBuilder: (context, indice){
+        itemBuilder: (context, indice) {
           final transferencia = widget._transferecias[indice];
           return ItemTransferencia(transferencia);
         },
@@ -122,7 +125,7 @@ class ListaTransferenciasState extends State<ListaTransferencias>{
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           final Future<Transferencia> future =
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
             return FormularioTransferencia();
           }));
           future.then((transferenciaRecebida) {
